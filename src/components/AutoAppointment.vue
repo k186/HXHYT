@@ -48,7 +48,7 @@ const appointData: ConfirmAppointmentData = reactive({
 const readyMakeAppointment = (val: string) => {
 
     if (val.length === 4) {
-        if(count.value===maxCount){
+        if (count.value === maxCount) {
             continueAppointment();
         }
         MakAppointment();
@@ -74,7 +74,7 @@ const MakAppointment = () => {
 }
 //check
 const checkContinue = () => {
-    if (count.value >=maxCount) {
+    if (count.value >= maxCount) {
         addMessage(`已达最大尝试次数(${maxCount}),如需继续请继续输入验证码.`);
         return false
     }
@@ -94,7 +94,8 @@ const getImage = () => {
         // appointData.verifyCode
         // appointData.encrypt
         appointData.imageId = res.bizSeq;
-        imgurl.value = `data:image/png;base64,${res.imageData}`
+        imgurl.value = `data:image/png;base64,${res.imageData}`;
+        //imageToBlack(imgurl.value,null)
         addMessage('请输入验证码！！！！')
         checkContinue()
     }).catch(error => {
@@ -110,9 +111,9 @@ const addMessage = (message: string) => {
     messageList.push(mes);
     let dom = document.querySelector('#list')
     if (dom) {
-      setTimeout(()=>{
-          dom.scrollTo(0, dom.scrollHeight)
-      },0)
+        setTimeout(() => {
+            dom.scrollTo(0, dom.scrollHeight)
+        }, 0)
     }
 }
 const resetMessage = () => {
@@ -146,8 +147,60 @@ const continueAppointment = () => {
     getImage();
 }
 const stopAppointment = () => {
-    count.value = maxCount-1;
+    count.value = maxCount - 1;
     addMessage(`已停止预约.`)
+}
+
+const imageToBlack = (base64Image: string,callback:Function) => {
+
+// 创建一个Image对象
+    const img = new Image();
+
+// 当图片加载完成后
+    img.onload = function () {
+        // 创建一个Canvas元素
+        const canvas = document.createElement('canvas');
+
+        // 设置Canvas的宽高与图片一样
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        // 在Canvas上绘制图片
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            return
+        }
+        ctx.drawImage(img, 0, 0);
+
+        // 获取图像数据
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        // 对图像数据进行黑白去噪处理
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            const gray = (imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 3;
+            imageData.data[i] = gray;
+            imageData.data[i + 1] = gray;
+            imageData.data[i + 2] = gray;
+        }
+
+        // 在Canvas上绘制黑白去噪后的图片
+        // // 去噪
+        // debugger
+        // cv.medianBlur(imageData, imageData, 3);
+
+        ctx.putImageData(imageData, 0, 0);
+
+        // 将Canvas转换为Base64格式
+        const resultBase64 = canvas.toDataURL('image/jpeg');
+
+        // 输出黑白去噪后的Base64图片数据
+        debugger
+        console.log(resultBase64)
+        callback&&callback(resultBase64)
+
+    };
+// 设置Image的源为Base64图片数据
+    img.src = base64Image;
 }
 
 onMounted(() => {
