@@ -7,6 +7,7 @@ import AutoAppointment from "@/components/AutoAppointment.vue";
 import {ref} from "vue";
 
 const stepActive = ref(2);
+const tabActive = ref('appointment');
 
 const changeStepTo = (step: number, data?: object | undefined) => {
     stepActive.value = step;
@@ -14,40 +15,46 @@ const changeStepTo = (step: number, data?: object | undefined) => {
 </script>
 
 <template>
-    <el-container>
-        <el-header>
-            <el-steps :active="stepActive" finish-status="success" process-status="finish">
-                <el-step title="Step 1" description="设置token"/>
-                <el-step title="Step 2" description="选择挂号日期"/>
-                <el-step title="Step 3" description="自动抢号"/>
-            </el-steps>
+    <el-tabs v-model="tabActive" class="demo-tabs">
+        <el-tab-pane label="预约" name="appointment">
+            <el-container>
+                <el-header>
+                    <el-steps :active="stepActive" finish-status="success" process-status="finish">
+                        <el-step title="Step 1" description="设置token"/>
+                        <el-step title="Step 2" description="选择挂号日期"/>
+                        <el-step title="Step 3" description="自动抢号"/>
+                    </el-steps>
 
-        </el-header>
-        <el-main>
-            <el-row :gutter="10" v-if="stepActive===0">
-                <el-col :span="12">
-                    <SetParams @on-submit="changeStepTo(1)"/>
-                </el-col>
-                <el-col :span="12">
-                    <GetTokenDoc/>
-                </el-col>
-            </el-row>
+                </el-header>
+                <el-main>
+                    <el-row :gutter="10" v-if="stepActive===0">
+                        <el-col :span="12">
+                            <SetParams @on-submit="changeStepTo(1)"/>
+                        </el-col>
+                        <el-col :span="12">
+                            <GetTokenDoc/>
+                        </el-col>
+                    </el-row>
 
 
-            <el-row :gutter="10" v-if="stepActive===1">
-                <el-col :span="12">
-                    <GetScheduleList @on-submit="(rowData)=>{changeStepTo(2,rowData)}"/>
-                </el-col>
-            </el-row>
-            <el-row :gutter="10" v-if="stepActive===2">
-                <el-col :span="12">
-                    <AutoAppointment/>
-                </el-col>
-            </el-row>
-            <el-alert
-                    style="margin: 20px 0"
-                    title="警告！当前操作直接忽略系统8点锁定和选就诊卡步骤，直接进入预约确认页面,不能保证100%能预约成功。"
-                    type="warning"/>
-        </el-main>
-    </el-container>
+                    <el-row :gutter="10" v-if="stepActive===1">
+                        <el-col :span="12">
+                            <GetScheduleList @on-submit="(rowData)=>{changeStepTo(2,rowData)}"/>
+                        </el-col>
+                    </el-row>
+                    <el-row :gutter="10" v-if="stepActive===2">
+                        <el-col :span="12">
+                            <AutoAppointment/>
+                        </el-col>
+                    </el-row>
+                    <el-alert
+                        style="margin: 20px 0"
+                        title="警告！当前操作直接忽略系统8点锁定和选就诊卡步骤，直接进入预约确认页面,不能保证100%能预约成功。"
+                        type="warning"/>
+                </el-main>
+            </el-container>
+        </el-tab-pane>
+        <el-tab-pane label="报告" name="report">Config</el-tab-pane>
+    </el-tabs>
+
 </template>
