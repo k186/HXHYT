@@ -1,6 +1,10 @@
 <template>
     <div class="reporter-container">
-        <el-form :inline="true" :model="formInline" class="demo-form-inline">
+        <el-form :inline="true" :model="formInline" class="demo-form-inline" label-width="80">
+            <el-form-item label="就诊卡号" style="display: flex">
+                <el-input v-model="formInline.cardId" pattern="[0-9]*" type='tel' placeholder="请输入就诊卡号">
+                </el-input>
+            </el-form-item>
             <el-form-item label="条码号" style="display: flex">
                 <el-input v-model="formInline.reportNo" pattern="[0-9]*" type='tel' placeholder="请输入报告号">
                     <template #append>
@@ -33,21 +37,7 @@
 </template>
 
 <script lang="ts" setup>
-/*
-*
-* {
-	"appCode": "HXGYAPP",
-	"organCode": "HID0101",
-	"channelCode": "PATIENT_IOS",
-	"cardId": "357951771529842688",
-	"reportType": "1",
-	"reportNo": "120749663200",
-	"reportName": "BK-JC病毒载量分析"
-}
 
-https://hytapiv2.cd120.com/cloud/hosplatcustomer/elecreport/querydetails
-
-* */
 import {reactive, ref} from "vue";
 import {getReport} from "@/utils/api";
 
@@ -61,15 +51,15 @@ interface Row {
 
 interface FormData {
     reportNo: string
+    cardId: string
 }
 
 const formInline: FormData = reactive({
-    //reportNo: "120749663200",
     reportNo: "120749663100",
     "appCode": "HXGYAPP",
     "organCode": "HID0101",
     "channelCode": "PATIENT_IOS",
-    "cardId": "357951771529842688",
+    "cardId": "",
     "reportType": "1",
     "reportName": ""
 })

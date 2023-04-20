@@ -6,3 +6,4 @@ import Report from "@/components/Report.vue";
 <template>
     <Report></Report>
 </template>
+
