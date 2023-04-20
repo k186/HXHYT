@@ -11,27 +11,44 @@
             </el-form-item>
         </el-form>
         <el-table
+                header-align="center"
+                size="small"
                 :data="tableData"
                 style="width: 100%"
                 :row-class-name="tableRowClassName"
         >
-            <el-table-column prop="date" label="项目" width="180"/>
-            <el-table-column prop="name" label="结果" width="180">
-
+            <el-table-column prop="itemName" label="项目"/>
+            <el-table-column label="结果">
+                <template #default="scope">
+                    <div>
+                        <div>{{ scope.row.resultValue }} <span
+                                v-if="scope.row.resultType>1">{{ getArrow(scope.row.resultType) }}</span></div>
+                        <div class="reporter-refer">参考范围:({{ scope.row.referValue }})</div>
+                    </div>
+                </template>
             </el-table-column>
-            <el-table-column prop="address" label="单位"/>
+            <el-table-column prop="unit" label="单位" width="70"/>
         </el-table>
     </div>
 </template>
 
 <script lang="ts" setup>
 /*
-* {"appCode":"HXGYAPP","organCode":"HID0101","channelCode":"PATIENT_IOS","cardId":"357951771529842688","reportType":"1","reportNo":"120749663100","reportName":"尿液分析(干化学)+尿沉渣定量分析"}
+*
+* {
+	"appCode": "HXGYAPP",
+	"organCode": "HID0101",
+	"channelCode": "PATIENT_IOS",
+	"cardId": "357951771529842688",
+	"reportType": "1",
+	"reportNo": "120749663200",
+	"reportName": "BK-JC病毒载量分析"
+}
 
 https://hytapiv2.cd120.com/cloud/hosplatcustomer/elecreport/querydetails
 
 * */
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import {getReport} from "@/utils/api";
 
 interface Row {
@@ -47,13 +64,14 @@ interface FormData {
 }
 
 const formInline: FormData = reactive({
+    //reportNo: "120749663200",
     reportNo: "120749663100",
     "appCode": "HXGYAPP",
     "organCode": "HID0101",
     "channelCode": "PATIENT_IOS",
     "cardId": "357951771529842688",
-    "reportType": 2,
-    "reportName": "尿液分析(干化学)+尿沉渣定量分析"
+    "reportType": "1",
+    "reportName": ""
 })
 
 
@@ -61,33 +79,64 @@ const tableRowClassName = ({row, rowIndex,}: {
     row: Row
     rowIndex: number
 }) => {
-    if (rowIndex === 1) {
-        return 'warning-row'
-    } else if (rowIndex === 3) {
-        return 'success-row'
+    let result = ''
+    switch (row.resultType) {
+        case 1:
+            result = 'warning-row'
+            break
+        case 2:
+            result = 'primary-row'
+            break
     }
-    return ''
+
+    return result
 }
 
-let tableData: Row[] = reactive([])
+let tableData = ref(null)
 
 const Search = () => {
     getReport.post('/cloud/hosplatcustomer/elecreport/querydetails', formInline)
         .then(res => {
-            tableData = res
+            tableData.value = res.resultItems
         })
         .catch(error => {
 
         })
 }
-
+const getArrow = (resultType: number | 0) => {
+    let result = ''
+    switch (resultType) {
+        case 1:
+            result = '↑'
+            break
+        case 2:
+            result = '↓'
+            break
+        default:
+            result = ''
+            break
+    }
+    return result
+}
 
 </script>
 
-<style scoped>
+<style>
 .reporter-container {
     display: flex;
     flex-direction: column;
 }
 
+.reporter-refer {
+    color: var(--el-color-info-dark-2);
+    font-size: 12px;
+}
+
+.el-table .warning-row {
+    color: var(--el-color-error) !important;
+}
+
+.el-table .primary-row {
+    color: var(--el-color-primary) !important;
+}
 </style>
