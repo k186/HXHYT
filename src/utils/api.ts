@@ -11,7 +11,7 @@ export const getStorage = (key?: string) => {
     if (key) {
         return result ? result[key] : null
     }
-    return  result
+    return result
 }
 
 
@@ -30,4 +30,9 @@ export const makeAppointment: Http = new Http('https://hytapiv2.cd120.com', {
     token: getStorage('token'),
     accessToken: getStorage('token'),
     // 'User-Agent': UA
+})
+
+export const getReport: Http = new Http('https://hytapiv2.cd120.com', {
+    token: getStorage('token'),
+    accessToken: getStorage('token'),
 })
