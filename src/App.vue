@@ -3,11 +3,12 @@ import SetParams from "@/components/SetParams.vue";
 import GetTokenDoc from "@/components/GetTokenDoc.vue";
 import GetScheduleList from "@/components/GetScheduleList.vue";
 import AutoAppointment from "@/components/AutoAppointment.vue";
+import Storage from "@/components/Storage.vue";
 
 import {ref} from "vue";
 
-const stepActive = ref(2);
-const tabActive = ref('appointment');
+const stepActive = ref(1);
+const tabActive = ref('2');
 
 const changeStepTo = (step: number, data?: object | undefined) => {
     stepActive.value = step;
@@ -16,7 +17,10 @@ const changeStepTo = (step: number, data?: object | undefined) => {
 
 <template>
     <el-tabs v-model="tabActive" class="demo-tabs">
-        <el-tab-pane label="预约" name="appointment">
+        <el-tab-pane label="获取LocalStorage" name="1">
+            <Storage/>
+        </el-tab-pane>
+        <el-tab-pane label="预约" name="2">
             <el-container>
                 <el-header>
                     <el-steps :active="stepActive" finish-status="success" process-status="finish">
@@ -54,7 +58,7 @@ const changeStepTo = (step: number, data?: object | undefined) => {
                 </el-main>
             </el-container>
         </el-tab-pane>
-        <el-tab-pane label="报告" name="report">Config</el-tab-pane>
+        <el-tab-pane label="报告" name="3">Config</el-tab-pane>
     </el-tabs>
 
 </template>

@@ -4,7 +4,7 @@
             <el-input v-model.trim="form.token" placeholder="请设置token"/>
         </el-form-item>
         <el-form-item label="cardId" prop="cardId">
-            <el-input type="password" v-model.trim="form.cardId" placeholder="cardId"/>
+            <el-input type="password" show-password v-model.trim="form.cardId" placeholder="cardId"/>
         </el-form-item>
         <el-form-item label="doctorId" prop="doctorId">
             <el-input type="password" show-password v-model.trim="form.doctorId" placeholder="请设置doctorId"/>

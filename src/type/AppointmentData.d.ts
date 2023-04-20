@@ -1,5 +1,5 @@
 export interface AppointmentData {
-    appointmentType: string;
+    appointmentType: number;
     channelCode: string;
     hospitalAreaCode: string;
     deptCode: string;

@@ -8,7 +8,7 @@
             <span class="auto-li-log">{{ el.message }}</span>
         </li>
     </ul>
-    <el-button v-if="count<maxCount" @click="stopAppointment">停止预约</el-button>
+    <el-button v-if="count<maxCount&&count>0" @click="stopAppointment">停止预约</el-button>
 </template>
 
 <script lang="ts" setup>
@@ -25,7 +25,7 @@ type messageItem = {
 
 let messageList = reactive<messageItem[]>([]);
 const count = ref(0)
-const maxCount = 1;
+const maxCount = 3;
 
 const sysScheduleId = getStorage('sysScheduleId');
 const cardId = getStorage('cardId');
@@ -41,8 +41,8 @@ const appointData: ConfirmAppointmentData = reactive({
     sysScheduleId: sysScheduleId,
     imageId: "",
     cardId: cardId,
-    encrypt: "OJwPVJRyEd2dnkjkIS8inknofAzCySKD5OgOIpP3AL4=",
-    appointmentType: 2
+    encrypt: "CFxR63YhhvL4CAoLtL+hKUnofAzCySKD5OgOIpP3AL4=",// 这个玩意儿每次获取就诊卡后会更新 有效期多久？
+    appointmentType: 1
 })
 
 const readyMakeAppointment = (val: string) => {

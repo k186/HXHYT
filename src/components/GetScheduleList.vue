@@ -3,14 +3,33 @@
         <el-avatar :size="50" :src="doctorInfo.docHeadImage"/>
         <el-text style="margin-left: 10px" class="mx-1" size="default" type="primary">{{ doctorInfo.docName }}</el-text>
         <el-text style="margin-left: 10px" class="mx-1" size="small" type="danger">
-            请确认好医生和要预约的日期！！！剩余量为空无法挂号！！
+            展示14天以内的排班！！只可预约7天以内的排班！
         </el-text>
     </div>
+<!--    <el-form>-->
+<!--        <el-item>-->
+<!--            <el-select v-model="doctorId" class="m-2" placeholder="请选择医生">-->
+<!--                <el-option-->
+<!--                    v-for="item in doctorList"-->
+<!--                    :key="item.doctorId"-->
+<!--                    :label="item.name"-->
+<!--                    :value="item.doctorId"-->
+<!--                />-->
+<!--            </el-select>-->
+<!--        </el-item>-->
+<!--    </el-form>-->
     <el-table stripe :data="tableData" style="width: 100%" highlight-current-row>
         <el-table-column type="index"/>
         <el-table-column label="日期">
             <template #default="scope">
-                <div>{{ scope.row.scheduleDate}}{{scope.row.scheduleRange==1?'下午':'上午'}}</div>
+                <div>
+                    {{ scope.row.scheduleDate }}
+                    &nbsp;&nbsp;
+                    <el-tag type="success" effect="dark">{{getWeek(scope.row.scheduleDate)}}</el-tag>
+                   &nbsp;&nbsp;
+                    <el-tag type="success" size="small">{{ scope.row.scheduleRange == 1 ? '下午' : '上午' }}</el-tag>
+
+                </div>
             </template>
         </el-table-column>
         <el-table-column prop="availableCount" label="剩余量" width="180"/>
@@ -21,7 +40,7 @@
         </el-table-column>
         <el-table-column fixed="right" width="80">
             <template #default="scope">
-                <el-button size="small" type="primary" round @click="onSubmit(scope.row)">预约</el-button>
+                <el-button v-if="filterFun(scope.row.scheduleDate,7)" size="small" type="primary" round @click="onSubmit(scope.row)">预约</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -66,12 +85,12 @@ const getTableData = () => {
         .then((res) => {
             doctorInfo.docName = res.docName;
             doctorInfo.docHeadImage = res.docHeadImage;
-            tableData.value = res.sourceItemsRespVos;
+            tableData.value = filterData(res.sourceItemsRespVos);
             setTimeout(() => {
                 loading.close()
             }, 1000)
         }).catch(error => {
-        ElMessage.error('获取排班列表失败');
+        ElMessage.error(error);
         setTimeout(() => {
             loading.close()
         }, 1000)
@@ -114,11 +133,47 @@ const onSubmit = (rowData: DoctorScheduleRowData | undefined) => {
     }
 }
 
-const setSysScheduleId = (sysScheduleId:string) => {
+const setSysScheduleId = (sysScheduleId: string) => {
     let data = getStorage() || {};
     data.sysScheduleId = sysScheduleId;
     window.localStorage.setItem(storageKey, JSON.stringify(data))
 }
 
+
+const getWeek = (dateStr: string) => {
+    if (!dateStr) return
+    const date = new Date(dateStr)
+    const day = date.getDay()
+    const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+    return weekdays[day]
+}
+
+const filterData = (data: []) => {
+    return data.filter((item) => {
+        return filterFun(item.scheduleDate, 14)
+
+    })
+}
+
+const filterFun = (datastr, limit: number | 7) => {
+    const now = new Date()
+    const time = new Date(datastr)
+    const diffMs = time.getTime() - now.getTime()
+    const diffDays = diffMs / (1000 * 60 * 60 * 24)
+    if (diffDays <= limit && diffDays > 0) {
+        return true
+    } else {
+        return false
+    }
+}
+
+const doctorList=[
+    {
+        doctorId:"4028b881646e3d8701646e3d876101c9",
+        name:"石运莹"
+    }
+]
+
+const doctorId= ref('4028b881646e3d8701646e3d876101c9')
 
 </script>
